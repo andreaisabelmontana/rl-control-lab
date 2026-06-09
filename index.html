@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RL Control Lab — Built From Scratch</title>
+<meta name="description" content="An original from-scratch build: a hands-on laboratory of the classic reinforcement-learning control algorithms — from tabular Q-learning to policy gradients — tested on standard control environments." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --accent:#0d9488; --accent-soft:#e3f5f2; --ink:#0f201d; --muted:#4d635e;
+    --line:#d4e8e4; --bg:#f7fcfb; --card:#ffffff;
+    --serif:'Fraunces',Georgia,serif; --sans:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:0 28px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code{font-family:var(--mono);font-size:.86em;background:var(--accent-soft);padding:.1em .4em;border-radius:4px;color:#0f766e}
+  h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.15;letter-spacing:-.01em}
+  header.hero{padding:88px 0 56px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin:0 0 22px}
+  h1{font-size:clamp(2.6rem,6vw,4.1rem);margin:0 0 18px}
+  .lede{font-size:1.22rem;color:var(--muted);max-width:62ch;margin:0 0 28px}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;font-size:.82rem}
+  .chip{font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--muted);background:var(--card)}
+  section{padding:54px 0;border-bottom:1px solid var(--line)}
+  .kicker{font-family:var(--mono);font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+  h2{font-size:clamp(1.7rem,3.4vw,2.3rem);margin:0 0 20px}
+  h3{font-size:1.2rem;margin:0 0 6px}
+  p{margin:0 0 18px;max-width:68ch}
+  .muted{color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:8px}
+  .tool{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .tool .t{font-family:var(--mono);font-size:.78rem;color:var(--accent);letter-spacing:.04em;margin-bottom:8px}
+  .tool h3{font-size:1.05rem;font-family:var(--sans);font-weight:600;margin-bottom:6px}
+  .tool p{font-size:.92rem;color:var(--muted);margin:0}
+  ol.flow{counter-reset:s;list-style:none;padding:0;margin:24px 0 0}
+  ol.flow li{position:relative;padding:18px 0 18px 56px;border-top:1px solid var(--line)}
+  ol.flow li:before{counter-increment:s;content:counter(s,decimal-leading-zero);position:absolute;left:0;top:18px;font-family:var(--mono);font-size:.8rem;color:var(--accent);border:1px solid var(--line);border-radius:8px;width:38px;height:38px;display:grid;place-items:center;background:var(--card)}
+  ol.flow li h3{font-family:var(--sans);font-size:1.02rem;font-weight:600;margin:0 0 4px}
+  ol.flow li p{margin:0;font-size:.93rem;color:var(--muted)}
+  .callout{background:var(--accent-soft);border:1px solid #bce3dd;border-radius:14px;padding:24px 26px;margin-top:8px}
+  .callout p:last-child{margin:0}
+  ul.learn{list-style:none;padding:0;margin:8px 0 0}
+  ul.learn li{padding:14px 0 14px 30px;border-top:1px solid var(--line);position:relative;color:var(--muted);max-width:68ch}
+  ul.learn li:before{content:"→";position:absolute;left:0;color:var(--accent);font-family:var(--mono)}
+  ul.learn li b{color:var(--ink);font-weight:600}
+  .price{display:flex;align-items:baseline;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 26px;margin-top:8px}
+  .price .n{font-family:var(--serif);font-size:2.6rem;color:var(--accent);line-height:1}
+  .price .l{color:var(--muted);font-size:.95rem}
+  footer{padding:48px 0 80px}
+  .credit{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px}
+  .credit .k{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+  footer .fine{font-size:.8rem;color:var(--muted);margin-top:22px;text-align:center}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">From-Scratch Build · Reinforcement Learning</p>
+    <h1>RL Control Lab</h1>
+    <p class="lede">One environment, many algorithms. This is a workbench for the classic reinforcement-learning methods — value iteration, Q-learning, SARSA, policy gradients — each implemented from scratch and pitted against the same control tasks so you can see exactly how they differ. I built it to turn a reading list of RL chapters into something I could run.</p>
+    <div class="meta">
+      <span class="chip">Python</span><span class="chip">Q-learning</span><span class="chip">SARSA</span>
+      <span class="chip">Policy gradients</span><span class="chip">Gymnasium</span><span class="chip">Benchmarking</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">What it is</p>
+    <h2>A bench where RL methods compete</h2>
+    <p>Reinforcement learning has a sprawling family of algorithms, and reading about them only gets you so far — they truly click when you run two side by side on the same problem and watch one learn faster, more stably, or not at all. This lab is exactly that: a shared harness where each method plugs into the same environments and reports the same metrics.</p>
+    <p>The point isn't a single clever agent — it's the comparison. Value-based vs policy-based, on-policy vs off-policy, tabular vs approximate. By holding the environment fixed and swapping only the algorithm, the trade-offs that textbooks describe in prose become curves you can actually see.</p>
+    <div class="price">
+      <div class="n">1 : N</div>
+      <div class="l">one shared environment harness, many interchangeable algorithms — the design that makes honest comparison possible.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">The stack</p>
+    <h2>The methods on the bench</h2>
+    <p class="muted">Each is implemented from first principles, not imported from a library.</p>
+    <div class="grid">
+      <div class="tool"><div class="t">planning</div><h3>Value iteration</h3><p>When the model is known, sweep the Bellman equation to optimality — the baseline every learner is measured against.</p></div>
+      <div class="tool"><div class="t">off-policy</div><h3>Q-learning</h3><p>Learn the optimal action-values directly, even while exploring — the workhorse of tabular RL.</p></div>
+      <div class="tool"><div class="t">on-policy</div><h3>SARSA</h3><p>Learn the value of the policy you're actually following — more cautious, and revealing about the difference.</p></div>
+      <div class="tool"><div class="t">policy-based</div><h3>Policy gradients</h3><p>Skip values; nudge the policy parameters directly in the direction of higher reward.</p></div>
+      <div class="tool"><div class="t">harness</div><h3>Shared environment API</h3><p>A common interface so any agent can run on any task without touching the algorithm code.</p></div>
+      <div class="tool"><div class="t">analysis</div><h3>Learning curves</h3><p>Reward-over-time plots and stability metrics, logged identically for every method.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">Architecture</p>
+    <h2>How a comparison runs</h2>
+    <p>Every experiment follows the same controlled procedure so results are actually comparable:</p>
+    <ol class="flow">
+      <li><h3>Fix the task</h3><p>Choose a control environment and freeze its settings for the whole sweep.</p></li>
+      <li><h3>Plug an agent</h3><p>Drop in one algorithm through the shared interface — nothing else changes.</p></li>
+      <li><h3>Train</h3><p>Run the agent for a fixed budget of episodes, logging reward and stability throughout.</p></li>
+      <li><h3>Repeat across methods</h3><p>Swap the agent and rerun under identical conditions and seeds.</p></li>
+      <li><h3>Compare</h3><p>Overlay the learning curves to read off speed, stability and final performance.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">Reflection</p>
+    <h2>What rebuilding it taught me</h2>
+    <ul class="learn">
+      <li><b>Implementing beats reading.</b> The Bellman equation is one line of maths and a surprising amount of bookkeeping; writing it is what makes it real.</li>
+      <li><b>On-policy vs off-policy is a personality.</b> SARSA learns a safer path, Q-learning a bolder one — the same task, two genuinely different agents.</li>
+      <li><b>A fair harness is the hard part.</b> Most of the engineering is making sure the only thing that changes between runs is the algorithm.</li>
+      <li><b>Seeds and variance matter.</b> One lucky run proves nothing; comparing methods honestly means averaging over many.</li>
+      <li><b>Policy gradients think differently.</b> Optimising a policy directly, with no value table in sight, reframes the whole problem.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="credit">
+      <div class="k">About this build</div>
+      <p style="margin:0">An original, from-scratch build by <b>Andrea</b> — written to learn the family of reinforcement-learning control algorithms by implementing and benchmarking them on a common harness. Plain HTML/CSS, deployed on GitHub Pages.</p>
+    </div>
+    <p class="fine">Built from scratch by Andrea · one of an ongoing series of learning builds.</p>
+  </div>
+</footer>
+</body>
+</html>
